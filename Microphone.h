@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define TRESHOLD 2200
+#define TRESHOLD 2100
 
 class Microphone {
 
