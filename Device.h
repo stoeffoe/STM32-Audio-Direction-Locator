@@ -7,7 +7,7 @@
 #define ADCMIN 0
 #define SUPPLYVOLTAGE 3.3
 
-#define SAMPLERATE ADC_SMPR_239_5
+#define SAMPLERATE ADC_SMPR_7_5
 
 void setupDMA(uint8_t* pins, uint16_t* dataPoints, uint8_t numOfPins);
 
