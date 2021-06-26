@@ -1,6 +1,7 @@
 #include "Microphone.h"
 #include "Device.h"
 
+
 #define NUMOFSENSORS 2
 
 
@@ -21,18 +22,18 @@ void setup()
 
 void loop()
 {
-   
     for (int i=0; i<500000; i++) {
         soundSensorA.takeSample();
         soundSensorB.takeSample();
     }
+    
 
 //    Serial.println(soundSensorA.getPeakTimestamp());
     if (soundSensorA.getPeakTimestamp() && soundSensorB.getPeakTimestamp()){
         int64_t res = (int64_t)soundSensorA.getPeakTimestamp() - (int64_t)soundSensorB.getPeakTimestamp();
-//        if (res < 1000 && res > -1000){
+        if (res < 800 && res > -800){
             Serial.println(res);
-//        }
+        }
 //        Serial.println();
     }
     Serial.println(".");
