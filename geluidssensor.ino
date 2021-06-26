@@ -1,6 +1,6 @@
 #include "Microphone.h"
 #include "Device.h"
-
+#include "cross-correlation.h"
 
 #define NUMOFSENSORS 2
 
@@ -22,6 +22,12 @@ void setup()
 
 void loop()
 {
+    int x[10000];
+
+    for (int i=0; i<10000; i++){
+        x[i] += x[i+1];
+    }
+    
     for (int i=0; i<500000; i++) {
         soundSensorA.takeSample();
         soundSensorB.takeSample();

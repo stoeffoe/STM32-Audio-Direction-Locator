@@ -13,4 +13,4 @@ void setupDMA(uint8_t* pins, uint16_t* dataPoints, uint8_t numOfPins);
 
 float ADCtoVolts(float ADCValue);
 
-#endif
+#endif /*DEVICE_H*/

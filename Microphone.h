@@ -11,7 +11,6 @@ class Microphone {
         uint16_t* adcReadAddr;
         uint16_t signalMax;
         uint16_t signalMin;
-        
         uint32_t peakTimestamp;
 
     public:
@@ -24,4 +23,4 @@ class Microphone {
         static float voltsToDecibel(float volts);
 };
 
-#endif
+#endif /*MICROPHONE_H*/
