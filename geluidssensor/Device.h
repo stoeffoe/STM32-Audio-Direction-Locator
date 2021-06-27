@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define ADCMAX 4096
+#define ADCMAX 4095
 #define ADCMIN 0
 #define SUPPLYVOLTAGE 3.3
 
