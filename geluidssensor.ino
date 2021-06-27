@@ -1,72 +1,106 @@
 #include "Microphone.h"
 #include "Device.h"
-#include "cross-correlation.h"
+#include "cross_correlation.h"
+#include "soundSpeed.h"
+
 
 #define NUMOFSENSORS 2
+#define BUFSIZE 500
 
+bool dataReady = false;
 
 uint8_t soundSensPins[NUMOFSENSORS] = {PA0, PA1};
 
 uint16_t analogOutputs[NUMOFSENSORS];
 
+
+int16_t signals[NUMOFSENSORS][BUFSIZE];
+
 Microphone soundSensorA((uint16_t*) analogOutputs);
 Microphone soundSensorB((uint16_t*) analogOutputs+1);
-//SoundSensor soundSensorB(dataPoints[]);
 
-void setup()
-{
+
+
+
+
+void setup() {
+  delay(1000);
+      // Setup Sample Timer
+    Timer2.setMode(TIMER_CH1, TIMER_OUTPUTCOMPARE);
+    Timer2.setPeriod(10); // in microseconds
+    Timer2.setCompare(TIMER_CH1, 1);     
+    Timer2.attachInterrupt(TIMER_CH1, sampleInterrupt);
+    
     Serial.begin(2000000);
     setupDMA(soundSensPins, analogOutputs, NUMOFSENSORS);
+
+//    uint16_t s1[] = {0,0,1,2,1,0};
+//    uint16_t s2[] = {0,0,0,1,2,1};
+//
+//    delay(1000);
+//    Serial.println(calculateDelay(s1,s2,6,5));
+}
+
+void loop() {
+
+
+
+    if (dataReady) {
+        dataReady = false;
+
+//        for (uint16_t i=0; i<BUFSIZE ; i++){
+//            Serial.print(signals[0][i]);
+//            Serial.print(',');
+//
+//        }
+//        Serial.println();
+//        for (uint16_t i=0; i<BUFSIZE ; i++){
+//            Serial.print(signals[1][i]);
+//            Serial.print(',');
+//
+//        }
+
+        filterData(signals[0], BUFSIZE);
+        filterData(signals[1], BUFSIZE);
+//       Serial.println(calculateDelay(signals[0],signals[1],BUFSIZE, 70));
+        Serial.println(degrees(acos((((float)calculateDelay(signals[0],signals[1],BUFSIZE, 70)/100000.0)*343.4)/0.2)));
+
+
+        Timer2.resume();
+    }
+
+
+
 }
 
 
-void loop()
-{
-    int x[10000];
 
-    for (int i=0; i<10000; i++){
-        x[i] += x[i+1];
-    }
+void sampleInterrupt(){
+    static bool recording = false;
+    static uint16_t sampleIndex = 0;
     
-    for (int i=0; i<500000; i++) {
-        soundSensorA.takeSample();
-        soundSensorB.takeSample();
-    }
-    
-
-//    Serial.println(soundSensorA.getPeakTimestamp());
-    if (soundSensorA.getPeakTimestamp() && soundSensorB.getPeakTimestamp()){
-        int64_t res = (int64_t)soundSensorA.getPeakTimestamp() - (int64_t)soundSensorB.getPeakTimestamp();
-        if (res < 800 && res > -800){
-            Serial.println(res);
+    if (recording){
+        for (uint8_t i=0; i<NUMOFSENSORS; i++){
+            signals[i][sampleIndex] = analogOutputs[i];
         }
-//        Serial.println();
+        sampleIndex++;
+
+        if (sampleIndex >= BUFSIZE){
+            recording = false;
+            dataReady = true;
+            sampleIndex = 0;
+            Timer2.pause();
+        }
+        
+    } else {
+
+        for (uint8_t i=0; i<NUMOFSENSORS; i++){
+            signals[i][sampleIndex] = analogOutputs[i];
+            
+            if (recording == false && signals[i][sampleIndex] > TRESHOLD){
+                recording = true;
+            }
+            
+        }
     }
-    Serial.println(".");
-//    Serial.println(soundSensorA.getPeakTimestamp());
-
-
-//    uint16_t sa = analogOutputs[0];
-//    uint16_t sb = analogOutputs[1];
-//
-//Serial.print(3500);
-//Serial.print(',');
-//Serial.print(1500);
-//Serial.print(',');
-//    Serial.print(sa);
-//    Serial.print(',');
-//    Serial.println(sb);
-//    soundSensorA.takeSample();
-//    Serial.print(2048);
-//    Serial.print(',');
-//    Serial.println(analogOutputs[0]);
-////    Serial.print(',');
-////    Serial.print(3500);
-////    Serial.print(',');
-////    Serial.println(1500);
-//    delayMicroseconds(5);
-////    Serial.println(soundSensorA.getPeakDecibel());
-soundSensorB.resetSamples();
-    soundSensorA.resetSamples();
-
 }

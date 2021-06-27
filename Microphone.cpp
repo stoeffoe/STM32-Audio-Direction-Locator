@@ -10,12 +10,7 @@ Microphone :: Microphone(uint16_t* adcReadAddr) {
 
 void Microphone :: takeSample() {
     if (*adcReadAddr > signalMax) {
-        signalMax = *adcReadAddr;
-        
-        if (signalMax > TRESHOLD){
-            peakTimestamp = micros();
-        }
-        
+        signalMax = *adcReadAddr;  
     } else if (*adcReadAddr < signalMin) {
         signalMin = *adcReadAddr;
     }
