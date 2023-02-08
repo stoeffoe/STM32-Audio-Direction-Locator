@@ -1,8 +1,10 @@
 #ifndef SOUNDSPEED_H
 #define SOUNDSPEED_H
 
-float soundSpeedFromTempKelvin(float airTempKelvin);
+// temperature to speed of sound in meters/second
 
-float soundSpeedFromTempCelsius(float airTempCelsius);
+float soundSpeedFromTempKelvin(float airTemperatureKelvin);
+
+float soundSpeedFromTempCelsius(float airTemperatureCelsius);
 
 #endif /*SOUNDSPEED_H*/

@@ -1,11 +1,13 @@
 #include "SoundSpeed.h"
 #include <math.h>
 
-float soundSpeedFromTempKelvin(float airTempKelvin){
-    return 20.05 * sqrt(airTempKelvin);
+const float KELVIN_CELCIUS_OFFSET = 273.15f;
+const float SOUND_SPEED_CONSTANT = 20.05f;
+
+float soundSpeedFromTempKelvin(float airTemperatureKelvin){
+    return SOUND_SPEED_CONSTANT * sqrt(airTemperatureKelvin);
 }
 
-
-float soundSpeedFromTempCelsius(float airTempCelsius){
-    return  soundSpeedFromTempKelvin(273.15 + airTempCelsius);
+float soundSpeedFromTempCelsius(float airTemperatureCelsius){
+    return soundSpeedFromTempKelvin(KELVIN_CELCIUS_OFFSET + airTemperatureCelsius);
 }

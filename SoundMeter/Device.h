@@ -3,9 +3,9 @@
 
 #include <Arduino.h>
 
-#define ADCMAX 4095
-#define ADCMIN 0
-#define SUPPLYVOLTAGE 3.3
+#define ADC_MAX 4095
+#define ADC_MIN 0
+#define SUPPLY_VOLTAGE 3.3
 
 #define SAMPLERATE ADC_SMPR_7_5
 

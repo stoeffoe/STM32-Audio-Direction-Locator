@@ -4,65 +4,43 @@
 #include "SoundSpeed.h"
 
 
-#define NUMOFSENSORS 2
+#define NUM_OF_MICROPHONES 2
 #define BUFSIZE 500
 
 bool dataReady = false;
 
-uint8_t soundSensPins[NUMOFSENSORS] = {PA0, PA1};
+uint8_t soundSensPins[NUM_OF_MICROPHONES] = {PA0, PA1};
 
-uint16_t analogOutputs[NUMOFSENSORS];
+uint16_t analogOutputs[NUM_OF_MICROPHONES];
 
 
-int16_t signals[NUMOFSENSORS][BUFSIZE];
+int16_t signals[NUM_OF_MICROPHONES][BUFSIZE];
 
 Microphone soundSensorA((uint16_t*) analogOutputs);
 Microphone soundSensorB((uint16_t*) analogOutputs+1);
 
 
-
-
-
 void setup() {
   delay(1000);
-      // Setup Sample Timer
+      // Setup microphone sampling timer
     Timer2.setMode(TIMER_CH1, TIMER_OUTPUTCOMPARE);
-    Timer2.setPeriod(20); // in microseconds
+    Timer2.setPeriod(20); // 20 microseconds | 50kHz
     Timer2.setCompare(TIMER_CH1, 1);     
     Timer2.attachInterrupt(TIMER_CH1, sampleInterrupt);
     
     Serial.begin(2000000);
-    setupDMA(soundSensPins, analogOutputs, NUMOFSENSORS);
+    setupDMA(soundSensPins, analogOutputs, NUM_OF_MICROPHONES); // Direct Memory Access for high frequency sampling
 
-//    uint16_t s1[] = {0,0,1,2,1,0};
-//    uint16_t s2[] = {0,0,0,1,2,1};
-//
-//    delay(1000);
-//    Serial.println(calculateDelay(s1,s2,6,5));
 }
 
 void loop() {
 
-
-
     if (dataReady) {
         dataReady = false;
 
-//        for (uint16_t i=0; i<BUFSIZE ; i++){
-//            Serial.print(signals[0][i]);
-//            Serial.print(',');
-//
-//        }
-//        Serial.println();
-//        for (uint16_t i=0; i<BUFSIZE ; i++){
-//            Serial.print(signals[1][i]);
-//            Serial.print(',');
-//
-//        }
-
         filterData(signals[0], BUFSIZE);
         filterData(signals[1], BUFSIZE);
-//       Serial.println(calculateDelay(signals[0],signals[1],BUFSIZE, 70));
+
         Serial.println((((float)calculateDelay(signals[0],signals[1],BUFSIZE, 400)/50000.0)*343.4));
         delay(200);
 
@@ -80,7 +58,7 @@ void sampleInterrupt(){
     static uint16_t sampleIndex = 0;
     
     if (recording){
-        for (uint8_t i=0; i<NUMOFSENSORS; i++){
+        for (uint8_t i=0; i<NUM_OF_MICROPHONES; i++){
             signals[i][sampleIndex] = analogOutputs[i];
         }
         sampleIndex++;
@@ -94,7 +72,7 @@ void sampleInterrupt(){
         
     } else {
 
-        for (uint8_t i=0; i<NUMOFSENSORS; i++){
+        for (uint8_t i=0; i<NUM_OF_MICROPHONES; i++){
             signals[i][sampleIndex] = analogOutputs[i];
             
             if (recording == false && signals[i][sampleIndex] > TRESHOLD){

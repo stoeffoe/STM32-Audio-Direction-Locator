@@ -33,8 +33,8 @@ uint32_t Microphone :: getPeakTimestamp() {
 
 
 void Microphone :: resetSamples() {  // reset all values
-    signalMax = ADCMIN;
-    signalMin = ADCMAX;
+    signalMax = ADC_MIN;
+    signalMin = ADC_MAX;
     peakTimestamp = 0;
 }
 
